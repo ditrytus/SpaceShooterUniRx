@@ -33,6 +33,6 @@ sysinfo.txt
 *.apk
 *.unitypackage
 
-#WakaTime Plugin
+# WakaTime Plugin
 /Assets/Editor/
 /Assets/Editor.meta
