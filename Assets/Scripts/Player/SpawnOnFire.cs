@@ -18,6 +18,7 @@ public class SpawnOnFire : MonoBehaviour {
 			.ThrottleFirst(TimeSpan.FromSeconds(throttle))
 			.Subscribe(_ => {
 				Instantiate(spawnedObject, spawnPoint.position, spawnPoint.rotation);
+				GetComponent<AudioSource>().Play();
 			});
 	}
 }
