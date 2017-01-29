@@ -1,25 +1,51 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UniRx;
-using UniRx.Triggers;
+using System;
 
 public class GameController : MonoBehaviour {
 
 	public GameObject hazard;
 	public Vector3 spawnPositions;
 	public FloatRange spawnPositionXRange;
+	public int initialHazardCount;
+	public float spawnInterval;
+	public float waveDelay;
+	public float waveInterval;
+
+	private int hazardCount;
+
 
 	void Start () {
-		SpawnWave();
+		hazardCount = initialHazardCount;
+
+		var waves = new Subject<Unit>();
+
+		waves
+			.Subscribe(_ => {
+				Observable
+					.Interval(TimeSpan.FromSeconds(spawnInterval))
+					.Take(hazardCount)
+					.Subscribe(
+						__ =>
+							SpawnAsteroid(),
+						() =>
+							Observable
+								.Timer(TimeSpan.FromSeconds(waveInterval))
+								.Subscribe(___ => {
+									waves.OnNext(Unit.Default);
+								}));
+				hazardCount++;
+			});
+
+		waves.OnNext(Unit.Default);
 	}
 
-	void SpawnWave()
+	void SpawnAsteroid()
 	{
-        Instantiate(
+		Instantiate(
 			hazard,
 			new Vector3(
-				Random.Range(spawnPositionXRange.min, spawnPositionXRange.max),
+				UnityEngine.Random.Range(spawnPositionXRange.min, spawnPositionXRange.max),
 				spawnPositions.y,
 				spawnPositions.z),
 			Quaternion.identity);
