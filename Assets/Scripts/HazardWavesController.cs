@@ -2,7 +2,7 @@
 using UniRx;
 using System;
 
-public class GameController : MonoBehaviour {
+public class HazardWavesController : MonoBehaviour {
 	public GameObject hazard;
 	public Vector3 spawnPositions;
 	public FloatRange spawnPositionXRange;
@@ -11,11 +11,19 @@ public class GameController : MonoBehaviour {
 	public float waveDelay;
 	public float waveInterval;
 	private int hazardCount;
-	public ScoreController scoreController;
+
+	public ISubject<Unit> asteroidDestroyed;
+	public ISubject<Unit> playerDestroyed;
+
+	public HazardWavesController()
+	{
+		asteroidDestroyed = new Subject<Unit>();
+		playerDestroyed = new Subject<Unit>();
+		
+		hazardCount = initialHazardCount;
+	}
 
 	void Start () {
-		hazardCount = initialHazardCount;
-
 		var waves = new Subject<Unit>();
 
 		waves
@@ -48,6 +56,9 @@ public class GameController : MonoBehaviour {
 				spawnPositions.z),
 			Quaternion.identity);
 		
-		asteroid.GetComponent<DestroyOnCollision>().scoreController = scoreController;
+		var destroyOnCollision = asteroid.GetComponent<DestroyOnCollision>();
+
+		destroyOnCollision.asteroidDestroyed = asteroidDestroyed;
+		destroyOnCollision.playerDestroyed = playerDestroyed;
 	}
 }

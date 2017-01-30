@@ -1,13 +1,16 @@
 ﻿using UnityEngine;
 using UniRx;
+using System;
 
 public class BoundMovement : MonoBehaviour
 {
 	public Boundary boundary;
 
+	private IDisposable updateSubscription;
+
 	void Start ()
 	{
-		Observable.EveryFixedUpdate()
+		updateSubscription = Observable.EveryFixedUpdate()
 			.Subscribe(_ =>
 			{
 				transform.position = new Vector3(
@@ -16,5 +19,10 @@ public class BoundMovement : MonoBehaviour
 					Mathf.Clamp(transform.position.z, boundary.zRange.min, boundary.zRange.max)
 				);
 			});
+	}
+
+	void OnDestroy()
+	{
+		updateSubscription.Dispose();
 	}
 }
