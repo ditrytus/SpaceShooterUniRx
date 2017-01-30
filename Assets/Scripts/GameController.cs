@@ -3,7 +3,6 @@ using UniRx;
 using System;
 
 public class GameController : MonoBehaviour {
-
 	public GameObject hazard;
 	public Vector3 spawnPositions;
 	public FloatRange spawnPositionXRange;
@@ -11,9 +10,8 @@ public class GameController : MonoBehaviour {
 	public float spawnInterval;
 	public float waveDelay;
 	public float waveInterval;
-
 	private int hazardCount;
-
+	public ScoreController scoreController;
 
 	void Start () {
 		hazardCount = initialHazardCount;
@@ -42,12 +40,14 @@ public class GameController : MonoBehaviour {
 
 	void SpawnAsteroid()
 	{
-		Instantiate(
+		var asteroid = Instantiate(
 			hazard,
 			new Vector3(
 				UnityEngine.Random.Range(spawnPositionXRange.min, spawnPositionXRange.max),
 				spawnPositions.y,
 				spawnPositions.z),
 			Quaternion.identity);
+		
+		asteroid.GetComponent<DestroyOnCollision>().scoreController = scoreController;
 	}
 }
