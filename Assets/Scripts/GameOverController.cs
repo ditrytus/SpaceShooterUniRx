@@ -20,23 +20,20 @@ public class GameOverController : RxBehaviour {
 			gameOverText.gameObject.SetActive(true);
 		});
 
-		var canRestart = gameOver
-			.Delay(TimeSpan.FromSeconds(restartDelay));
-		
-		var sub2 = canRestart.Subscribe(_ => {
-			restartText.gameObject.SetActive(true);
-		});
-
-		var restartPressed = Observable
-			.EveryUpdate()
-			.Where(_ => Input.GetKeyDown(KeyCode.R));
-
-		var sub3 = restartPressed	
-			.CombineLatest(canRestart, (a,b) => Unit.Default)
+		var sub2 = gameOver
+			.Delay(TimeSpan.FromSeconds(restartDelay))
 			.Subscribe(_ => {
-				SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+				restartText.gameObject.SetActive(true);
+
+				Observable
+					.EveryUpdate()
+					.Where(__ => Input.GetKeyDown(KeyCode.R))
+					.First()
+					.Subscribe(___ => {
+						SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+					});
 			});
 		
-		AddSubscriptions(sub1, sub2, sub3);
+		AddSubscriptions(sub1, sub2);
 	}
 }
