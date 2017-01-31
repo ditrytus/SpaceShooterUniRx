@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UniRx;
 
-public class GameController : MonoBehaviour {
+public class GameController : RxBehaviour {
 	public int pointsPerHazard;
 
 	void Start () {
@@ -9,16 +9,18 @@ public class GameController : MonoBehaviour {
 		var scoreController = GetComponent<ScoreController>();
 		var gameOverController = GetComponent<GameOverController>();
 
-		hazardWavesController
+		var sub1 = hazardWavesController
 			.asteroidDestroyed
 			.Subscribe(_ => {
 				scoreController.newScore.OnNext(pointsPerHazard);
 			});
 		
-		hazardWavesController
+		var sub2 = hazardWavesController
 			.playerDestroyed
 			.Subscribe(_ => {
 				gameOverController.gameOver.OnNext(Unit.Default);
 			});
+
+		AddSubscriptions(sub1, sub2);
 	}
 }
