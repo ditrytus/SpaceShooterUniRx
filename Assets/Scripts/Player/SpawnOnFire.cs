@@ -2,7 +2,7 @@
 using UnityEngine;
 using UniRx;
 
-public class SpawnOnFire : MonoBehaviour {
+public class SpawnOnFire : RxBehaviour {
 
 	public GameObject spawnedObject;
 
@@ -13,12 +13,14 @@ public class SpawnOnFire : MonoBehaviour {
 	public string buttonName;
 
 	void Start () {
-		Observable.EveryUpdate()
+		var sub1 = Observable.EveryUpdate()
 			.Where(_ => Input.GetButton(buttonName))
 			.ThrottleFirst(TimeSpan.FromSeconds(throttle))
 			.Subscribe(_ => {
 				Instantiate(spawnedObject, spawnPoint.position, spawnPoint.rotation);
 				GetComponent<AudioSource>().Play();
 			});
+		
+		AddSubscriptions(sub1);
 	}
 }

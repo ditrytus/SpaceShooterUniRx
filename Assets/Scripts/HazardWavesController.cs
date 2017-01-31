@@ -2,7 +2,7 @@
 using UniRx;
 using System;
 
-public class HazardWavesController : MonoBehaviour {
+public class HazardWavesController : RxBehaviour {
 	public GameObject hazard;
 	public Vector3 spawnPositions;
 	public FloatRange spawnPositionXRange;
@@ -26,7 +26,7 @@ public class HazardWavesController : MonoBehaviour {
 	void Start () {
 		var waves = new Subject<Unit>();
 
-		waves
+		var sub1 = waves
 			.Subscribe(_ => {
 				Observable
 					.Interval(TimeSpan.FromSeconds(spawnInterval))
@@ -44,6 +44,8 @@ public class HazardWavesController : MonoBehaviour {
 			});
 
 		waves.OnNext(Unit.Default);
+
+		AddSubscriptions(sub1);
 	}
 
 	void SpawnAsteroid()

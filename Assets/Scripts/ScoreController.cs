@@ -2,7 +2,7 @@
 using UniRx;
 using UnityEngine.UI;
 
-public class ScoreController : MonoBehaviour {
+public class ScoreController : RxBehaviour {
 	public Text scoreText;
 	
 	public int score;
@@ -12,11 +12,13 @@ public class ScoreController : MonoBehaviour {
 	void Start () {
 		newScore = new Subject<int>();
 
-		newScore
+		var sub1 = newScore
 			.Select(n => score = score + n)
 			.Select(s => $"Score: {s}")
 			.SubscribeToText(scoreText);
 
 		newScore.OnNext(score);
+
+		AddSubscriptions(sub1);
 	}
 }

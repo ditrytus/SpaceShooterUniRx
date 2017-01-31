@@ -2,15 +2,13 @@
 using UniRx;
 using System;
 
-public class MoveOnInput : MonoBehaviour
+public class MoveOnInput : RxBehaviour
 {
 	public float speed;
-
-	private IDisposable updateSubscription;
 	
 	void Start ()
 	{
-		updateSubscription = Observable.EveryFixedUpdate()
+		var sub1 = Observable.EveryFixedUpdate()
 			.Subscribe(_ =>
 			{
                 GetComponent<Rigidbody>().velocity = new Vector3(
@@ -19,10 +17,7 @@ public class MoveOnInput : MonoBehaviour
 						Input.GetAxis("Vertical"))
 					* speed;
 			});
-	}
 
-	void OnDestroy()
-	{
-		updateSubscription.Dispose();
+		AddSubscriptions(sub1);
 	}
 }

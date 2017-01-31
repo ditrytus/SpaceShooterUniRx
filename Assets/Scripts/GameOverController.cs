@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class GameOverController : MonoBehaviour {
+public class GameOverController : RxBehaviour {
 	public ISubject<Unit> gameOver;
 	public float restartDelay;
 
@@ -16,14 +16,14 @@ public class GameOverController : MonoBehaviour {
 	void Start () {
 		gameOver = new Subject<Unit>();
 
-		gameOver.Subscribe(_ => {
+		var sub1 = gameOver.Subscribe(_ => {
 			gameOverText.gameObject.SetActive(true);
 		});
 
 		var canRestart = gameOver
 			.Delay(TimeSpan.FromSeconds(restartDelay));
 		
-		canRestart.Subscribe(_ => {
+		var sub2 = canRestart.Subscribe(_ => {
 			restartText.gameObject.SetActive(true);
 		});
 
@@ -31,10 +31,12 @@ public class GameOverController : MonoBehaviour {
 			.EveryUpdate()
 			.Where(_ => Input.GetKeyDown(KeyCode.R));
 
-		restartPressed	
+		var sub3 = restartPressed	
 			.CombineLatest(canRestart, (a,b) => Unit.Default)
 			.Subscribe(_ => {
 				SceneManager.LoadScene(SceneManager.GetActiveScene().name);
 			});
+		
+		AddSubscriptions(sub1, sub2, sub3);
 	}
 }

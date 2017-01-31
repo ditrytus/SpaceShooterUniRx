@@ -2,14 +2,16 @@
 using UniRx;
 using System;
 
-public class DestroyOnTimeout : MonoBehaviour {
+public class DestroyOnTimeout : RxBehaviour {
 	public float timeout;
 
 	void Start () {
-		Observable
+		var sub1 = Observable
 			.Timer(TimeSpan.FromSeconds(timeout))
 			.Subscribe(_ => {
 				Destroy(gameObject);
 			});
+		
+		AddSubscriptions(sub1);
 	}
 }

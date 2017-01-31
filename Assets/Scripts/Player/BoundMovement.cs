@@ -2,15 +2,13 @@
 using UniRx;
 using System;
 
-public class BoundMovement : MonoBehaviour
+public class BoundMovement : RxBehaviour
 {
 	public Boundary boundary;
 
-	private IDisposable updateSubscription;
-
 	void Start ()
 	{
-		updateSubscription = Observable.EveryFixedUpdate()
+		var sub1 = Observable.EveryFixedUpdate()
 			.Subscribe(_ =>
 			{
 				transform.position = new Vector3(
@@ -19,10 +17,7 @@ public class BoundMovement : MonoBehaviour
 					Mathf.Clamp(transform.position.z, boundary.zRange.min, boundary.zRange.max)
 				);
 			});
-	}
-
-	void OnDestroy()
-	{
-		updateSubscription.Dispose();
+		
+		AddSubscriptions(sub1);
 	}
 }
